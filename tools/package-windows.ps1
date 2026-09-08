@@ -4,7 +4,7 @@ $root = (Resolve-Path -LiteralPath $Dist).Path
 New-Item -ItemType Directory -Force -Path $Output | Out-Null
 $outputDirectory = (Resolve-Path -LiteralPath $Output).Path
 $savedEnvironment = @{}
-foreach ($name in @('PATH', 'QT_PLUGIN_PATH', 'QML2_IMPORT_PATH', 'QML_IMPORT_PATH', 'QT_QPA_PLATFORM', 'QT_QUICK_BACKEND')) {
+foreach ($name in @('PATH', 'QT_PLUGIN_PATH', 'QML2_IMPORT_PATH', 'QML_IMPORT_PATH', 'QT_QPA_PLATFORM', 'QT_QUICK_BACKEND', 'BETTER_PIP_DIAGNOSTICS')) {
     $savedEnvironment[$name] = [Environment]::GetEnvironmentVariable($name, 'Process')
 }
 try {
@@ -14,15 +14,20 @@ try {
     $env:QML_IMPORT_PATH = $null
     $env:QT_QPA_PLATFORM = 'offscreen'
     $env:QT_QUICK_BACKEND = 'software'
+    $env:BETTER_PIP_DIAGNOSTICS = '1'
     foreach ($runtime in @('msvcp140.dll', 'vcruntime140.dll', 'vcruntime140_1.dll')) {
         if (-not (Test-Path -LiteralPath (Join-Path $root "bin/$runtime"))) { throw "Missing runtime: $runtime" }
     }
-    $process = Start-Process -FilePath (Join-Path $root 'bin/better-pip.exe') -ArgumentList '--smoke-test' -WindowStyle Hidden -PassThru
+    $errorLog = Join-Path $outputDirectory 'startup-stderr.txt'
+    $process = Start-Process -FilePath (Join-Path $root 'bin/better-pip.exe') -ArgumentList '--smoke-test' -WindowStyle Hidden -PassThru -RedirectStandardError $errorLog
     if (-not $process.WaitForExit(20000)) {
         $process.Kill()
         throw 'Packaged application startup timed out.'
     }
-    if ($process.ExitCode -ne 0) { throw "Packaged application failed: $($process.ExitCode)" }
+    if ($process.ExitCode -ne 0) {
+        Get-Content -LiteralPath $errorLog
+        throw "Packaged application failed: $($process.ExitCode)"
+    }
 } finally {
     foreach ($name in $savedEnvironment.Keys) {
         [Environment]::SetEnvironmentVariable($name, $savedEnvironment[$name], 'Process')

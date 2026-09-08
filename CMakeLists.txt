@@ -89,6 +89,13 @@ qt_generate_deploy_qml_app_script(
     NO_UNSUPPORTED_PLATFORM_ERROR
 )
 install(SCRIPT ${deploy_script})
+if(TARGET Qt6::QOffscreenIntegrationPlugin)
+    set(PIP_PLATFORM_PLUGIN_DESTINATION plugins/platforms)
+    if(APPLE)
+        set(PIP_PLATFORM_PLUGIN_DESTINATION better-pip.app/Contents/PlugIns/platforms)
+    endif()
+    install(FILES $<TARGET_FILE:Qt6::QOffscreenIntegrationPlugin> DESTINATION ${PIP_PLATFORM_PLUGIN_DESTINATION})
+endif()
 set(PIP_LICENSE_DESTINATION licenses)
 if(APPLE)
     set(PIP_LICENSE_DESTINATION better-pip.app/Contents/Resources/licenses)

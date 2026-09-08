@@ -8,8 +8,16 @@
 #include <QQuickStyle>
 #include <QQuickWindow>
 #include <QTimer>
+#include <cstdio>
 
 int main(int argc, char *argv[]) {
+    if (qEnvironmentVariableIsSet("BETTER_PIP_DIAGNOSTICS")) {
+        qInstallMessageHandler([](QtMsgType, const QMessageLogContext &, const QString &message) {
+            const auto text = message.toLocal8Bit();
+            std::fprintf(stderr, "%s\n", text.constData());
+            std::fflush(stderr);
+        });
+    }
     QApplication app(argc, argv);
     QCoreApplication::setApplicationName(QStringLiteral("Better PiP"));
     QCoreApplication::setOrganizationName(QStringLiteral("BetterPiP"));
