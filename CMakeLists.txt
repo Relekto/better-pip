@@ -16,7 +16,22 @@ qt_add_library(pip-services STATIC
     src/core/SettingsStore.h src/core/SettingsStore.cpp
     src/capture/WindowSources.h src/capture/WindowSources.cpp
     src/capture/CaptureService.h src/capture/CaptureService.cpp
+    src/platform/GlobalShortcut.h src/platform/GlobalShortcut.cpp
+    src/app/SingleInstance.h src/app/SingleInstance.cpp
 )
+if(WIN32)
+    target_sources(pip-services PRIVATE src/platform/windows/WindowsShortcut.cpp)
+    target_link_libraries(pip-services PRIVATE user32)
+elseif(APPLE)
+    enable_language(OBJCXX)
+    set(CMAKE_OBJCXX_STANDARD 20)
+    target_sources(pip-services PRIVATE src/platform/macos/MacShortcut.mm)
+    target_link_libraries(pip-services PRIVATE "-framework Carbon")
+else()
+    find_package(X11 REQUIRED)
+    target_sources(pip-services PRIVATE src/platform/linux/LinuxShortcut.cpp)
+    target_link_libraries(pip-services PRIVATE X11::X11)
+endif()
 target_include_directories(pip-services PUBLIC src)
 target_link_libraries(pip-services PUBLIC Qt6::Core Qt6::Gui Qt6::Multimedia Qt6::Network)
 better_pip_warnings(pip-services)

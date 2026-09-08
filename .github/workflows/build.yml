@@ -31,11 +31,16 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libgl1-mesa-dev libxkbcommon-dev libxcb-cursor0 libxcb-xinerama0 libx11-dev libxext-dev
       - uses: jurplel/install-qt-action@48d3ad6db93f3627c8ee7a0454bc6f3744f7e730
+        if: runner.os != 'Windows'
         with:
           version: '6.11.2'
           arch: ${{ matrix.qt-arch }}
           modules: 'qtmultimedia qtshadertools'
           cache: true
+      - name: Install pinned Windows Qt SDK
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: ./tools/install-qt-windows.ps1 -Destination "$env:RUNNER_TEMP/Qt"
       - name: Configure
         run: cmake --preset release
       - name: Build
