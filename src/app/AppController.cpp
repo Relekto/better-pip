@@ -100,7 +100,7 @@ AppController::AppController(bool smokeTest, QObject *parent)
         tray_.show();
     }
     if (!smokeTest_) {
-        QTimer::singleShot(0, &sources_, &WindowSources::refresh);
+        sources_.refresh();
     }
 }
 AppController::~AppController() {
