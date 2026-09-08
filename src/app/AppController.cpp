@@ -27,6 +27,14 @@ AppController::AppController(bool smokeTest, QObject* parent)
         emit changed();
     });
     connect(&shortcut_, &GlobalShortcut::activated, this, &AppController::toggleLock);
+    connect(&shortcut_, &GlobalShortcut::registrationChanged, this, [this] {
+        if (shortcut_.registered() && !shortcut_.pending()) {
+            preferences_.lockShortcut = shortcut_.sequence();
+            save();
+        }
+        if (!shortcut_.error().isEmpty()) message_ = shortcut_.error();
+        emit changed();
+    });
     connect(QGuiApplication::styleHints(), &QStyleHints::colorSchemeChanged,
             this, [this] { emit changed(); });
     connect(qGuiApp, &QGuiApplication::screenRemoved, this, [this](QScreen*) {
@@ -89,8 +97,11 @@ bool AppController::dark() const {
 }
 QString AppController::sourceTitle() const { return capture_.title(); }
 QString AppController::message() const { return message_; }
-QString AppController::shortcut() const { return preferences_.lockShortcut; }
+QString AppController::shortcut() const {
+    return wayland() && shortcut_.registered() ? shortcut_.description() : preferences_.lockShortcut;
+}
 QString AppController::shortcutStatus() const {
+    if (shortcut_.pending()) return QStringLiteral("Waiting for your desktop's shortcut permission…");
     return shortcut_.registered() ? QStringLiteral("Global shortcut active")
                                   : QStringLiteral("Use Open controls to unlock");
 }
@@ -201,7 +212,7 @@ bool AppController::setShortcut(const QString& text) {
         report(shortcut_.error());
         return false;
     }
-    preferences_.lockShortcut = shortcut_.sequence();
+    if (!shortcut_.pending()) preferences_.lockShortcut = shortcut_.sequence();
     save();
     clearMessage();
     emit changed();

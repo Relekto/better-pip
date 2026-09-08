@@ -35,6 +35,7 @@ else()
     target_sources(pip-services PRIVATE src/platform/linux/LinuxShortcut.cpp)
     target_sources(pip-services PRIVATE src/platform/linux/PortalCapture.h src/platform/linux/PortalCapture.cpp
         src/platform/linux/PortalRequest.h src/platform/linux/PortalRequest.cpp)
+    target_sources(pip-services PRIVATE src/platform/linux/PortalShortcut.h src/platform/linux/PortalShortcut.cpp)
     target_link_libraries(pip-services PRIVATE X11::X11 Qt6::DBus PkgConfig::PipeWire)
 endif()
 target_include_directories(pip-services PUBLIC src)

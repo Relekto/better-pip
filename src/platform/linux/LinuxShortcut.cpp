@@ -1,4 +1,5 @@
 #include "platform/GlobalShortcut.h"
+#include "PortalShortcut.h"
 #include <QGuiApplication>
 #include <QSocketNotifier>
 #include <X11/Xlib.h>
@@ -95,6 +96,8 @@ private:
 };
 }
 std::unique_ptr<ShortcutBackend> makeShortcutBackend(GlobalShortcut& owner) {
+    if (QGuiApplication::platformName().contains(QStringLiteral("wayland")))
+        return std::make_unique<PortalShortcut>(owner);
     return std::make_unique<LinuxShortcut>(owner);
 }
 }
