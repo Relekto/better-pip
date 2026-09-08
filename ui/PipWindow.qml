@@ -1,13 +1,14 @@
 import QtQuick
 import QtQuick.Controls
 import QtMultimedia
+import "components"
 
 Window {
     id: pip
     required property QtObject controller
     width: 640
     height: 360
-    color: "#080b0c"
+    color: "#0b0d12"
     title: "Better PiP · " + controller.sourceTitle
     transientParent: null
     flags: Qt.Window | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint
@@ -27,7 +28,7 @@ Window {
     Label {
         anchors.centerIn: parent
         text: "Connecting to window…"
-        color: "#c8d5d0"
+        color: "#c8cfdd"
         visible: !controller.hasFrame
         font.pixelSize: 14
     }
@@ -62,7 +63,7 @@ Window {
         width: actions.implicitWidth + 16
         height: 40
         radius: 12
-        color: "#ed17231f"
+        color: "#ed191e28"
         visible: !controller.locked && (moveArea.containsMouse || toolbarHover.hovered || contextMenu.opened)
         HoverHandler {
             id: toolbarHover
@@ -71,17 +72,23 @@ Window {
             id: actions
             anchors.centerIn: parent
             spacing: 4
-            Button {
+            ActionButton {
+                dark: true
+                implicitHeight: 32
                 text: "Lock"
                 onClicked: controller.toggleLock()
                 ToolTip.visible: hovered
                 ToolTip.text: "Clicks pass through. Unlock with " + controller.shortcut
             }
-            Button {
+            ActionButton {
+                dark: true
+                implicitHeight: 32
                 text: "Controls"
                 onClicked: controller.showControls()
             }
-            Button {
+            ActionButton {
+                dark: true
+                implicitHeight: 32
                 text: "×"
                 onClicked: controller.stop()
                 Accessible.name: "Close picture-in-picture"

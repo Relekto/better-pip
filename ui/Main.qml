@@ -7,10 +7,14 @@ import "screens"
 ApplicationWindow {
     id: root
     required property QtObject controller
-    readonly property color ink: controller.dark ? "#edf5f0" : "#1c3027"
-    readonly property color muted: controller.dark ? "#9caea4" : "#6b7f73"
-    readonly property color surface: controller.dark ? "#17241d" : "#ffffff"
-    readonly property color line: controller.dark ? "#2b3c32" : "#e2eae4"
+    readonly property color ink: theme.ink
+    readonly property color muted: theme.muted
+    readonly property color surface: theme.surface
+    readonly property color line: theme.line
+    AppPalette {
+        id: theme
+        dark: controller.dark
+    }
     property bool settingsOpen: false
     width: 880
     height: 690
@@ -18,16 +22,16 @@ ApplicationWindow {
     minimumHeight: 530
     visible: true
     title: "Better PiP"
-    color: controller.dark ? "#101a15" : "#f3f6f2"
+    color: theme.background
     font.family: Qt.platform.os === "windows" ? "Segoe UI Variable" : ""
     palette.window: color
     palette.windowText: ink
     palette.text: ink
     palette.base: surface
-    palette.button: controller.dark ? "#26392d" : "#e9f0e9"
+    palette.button: theme.button
     palette.buttonText: ink
-    palette.highlight: "#45bf91"
-    palette.highlightedText: "#102b1f"
+    palette.highlight: theme.accent
+    palette.highlightedText: theme.onAccent
 
     onClosing: function (close) {
         if (controller.active) {
@@ -87,7 +91,7 @@ ApplicationWindow {
             Layout.fillWidth: true
             implicitHeight: noticeRow.implicitHeight + 24
             visible: controller.message.length > 0
-            color: controller.dark ? "#443926" : "#fff4db"
+            color: theme.warningSurface
             radius: 10
             RowLayout {
                 id: noticeRow
@@ -96,7 +100,7 @@ ApplicationWindow {
                 Label {
                     text: controller.message
                     textFormat: Text.PlainText
-                    color: controller.dark ? "#f4d797" : "#765620"
+                    color: theme.warningInk
                     wrapMode: Text.WordWrap
                     Layout.fillWidth: true
                     font.pixelSize: 12
@@ -150,8 +154,8 @@ ApplicationWindow {
                                 Accessible.name: "Search available windows"
                                 background: Rectangle {
                                     radius: 9
-                                    color: controller.dark ? "#101a15" : "#f6f8f5"
-                                    border.color: search.activeFocus ? "#45bf91" : root.line
+                                    color: theme.inset
+                                    border.color: search.activeFocus ? theme.accent : root.line
                                 }
                             }
                             ActionButton {
@@ -204,11 +208,11 @@ ApplicationWindow {
                                         Layout.preferredWidth: 36
                                         Layout.preferredHeight: 36
                                         radius: 9
-                                        color: controller.dark ? "#304638" : "#eaf2eb"
+                                        color: theme.accentSurface
                                         Label {
                                             anchors.centerIn: parent
                                             text: row.windowTitle.charAt(0).toUpperCase()
-                                            color: controller.dark ? "#8be6b7" : "#33724d"
+                                            color: theme.accentInk
                                             font.weight: Font.DemiBold
                                             font.pixelSize: 15
                                         }
@@ -230,9 +234,9 @@ ApplicationWindow {
                                 }
                                 background: Rectangle {
                                     radius: 9
-                                    color: row.hovered || row.visualFocus ? (controller.dark ? "#22372a" : "#f0f6ef") : "transparent"
+                                    color: row.hovered || row.visualFocus ? theme.accentSurface : "transparent"
                                     border.width: row.visualFocus ? 1 : 0
-                                    border.color: "#45bf91"
+                                    border.color: theme.accent
                                 }
                                 ToolTip {
                                     id: sourceTip
@@ -278,6 +282,7 @@ ApplicationWindow {
                             ActionButton {
                                 text: "Choose a window"
                                 primary: true
+                                dark: controller.dark
                                 onClicked: controller.chooseWithPortal()
                             }
                             Item {
@@ -314,7 +319,7 @@ ApplicationWindow {
             implicitHeight: 74
             visible: controller.active
             radius: 13
-            color: controller.dark ? "#22392b" : "#e1f0e3"
+            color: theme.accentSurface
             RowLayout {
                 anchors.fill: parent
                 anchors.margins: 14
@@ -340,6 +345,7 @@ ApplicationWindow {
                 ActionButton {
                     text: controller.locked ? "Unlock" : "Lock PiP"
                     primary: true
+                    dark: controller.dark
                     onClicked: controller.toggleLock()
                 }
                 ActionButton {

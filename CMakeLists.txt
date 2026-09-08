@@ -57,7 +57,7 @@ set_target_properties(better-pip PROPERTIES
 qt_add_qml_module(better-pip
     URI BetterPiP
     VERSION 1.0
-    QML_FILES ui/Main.qml ui/PipWindow.qml ui/components/ActionButton.qml ui/screens/SettingsPane.qml
+    QML_FILES ui/Main.qml ui/PipWindow.qml ui/components/ActionButton.qml ui/components/AppPalette.qml ui/screens/SettingsPane.qml
 )
 if(BUILD_TESTING)
     qt_add_executable(source-fixture tests/fixtures/SourceWindow.cpp)
