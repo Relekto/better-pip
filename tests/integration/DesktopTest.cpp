@@ -16,6 +16,7 @@ class DesktopTest final : public QObject {
     void captureResizeAndLock() {
         const auto title = QStringLiteral("Better PiP fixture ") + QUuid::createUuid().toString();
         QProcess fixture;
+        fixture.setProcessChannelMode(QProcess::ForwardedChannels);
         fixture.start(QCoreApplication::applicationDirPath() + QStringLiteral("/source-fixture"),
                       {title});
         QVERIFY(fixture.waitForStarted());
@@ -84,6 +85,7 @@ class DesktopTest final : public QObject {
 #endif
         QVERIFY(!controller.locked());
         QProcess application;
+        application.setProcessChannelMode(QProcess::ForwardedChannels);
         application.start(
             QCoreApplication::applicationDirPath() + QStringLiteral("/better-pip"),
             {QStringLiteral("--smoke-test"), QStringLiteral("--smoke-source"), title});

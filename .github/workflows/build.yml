@@ -29,7 +29,7 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y libgl1-mesa-dev libxkbcommon-dev libxcb-cursor0 libxcb-xinerama0 libx11-dev libxext-dev libpipewire-0.3-dev xvfb openbox dbus-x11
+          sudo apt-get install -y libgl1-mesa-dev libxkbcommon-dev libxcb-cursor0 libxcb-xinerama0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-render-util0 libxkbcommon-x11-0 libx11-dev libxext-dev libpipewire-0.3-dev libva-x11-2 libva-drm2 xvfb openbox dbus-x11 squashfs-tools desktop-file-utils
       - uses: jurplel/install-qt-action@48d3ad6db93f3627c8ee7a0454bc6f3744f7e730
         if: runner.os != 'Windows'
         with:
@@ -49,7 +49,7 @@ jobs:
         run: ctest --preset release
       - name: Linux desktop integration
         if: runner.os == 'Linux'
-        run: dbus-run-session -- xvfb-run -a sh -c 'openbox >/tmp/better-pip-openbox.log 2>&1 & exec ./build/release/desktop-test'
+        run: dbus-run-session -- xvfb-run -a sh -c 'openbox >/tmp/better-pip-openbox.log 2>&1 & QT_QPA_PLATFORM=xcb QT_QUICK_BACKEND=software ./build/release/desktop-test; result=$?; cat /tmp/better-pip-openbox.log; exit $result'
       - name: Package directory
         run: cmake --install build/release --prefix dist
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
