@@ -66,6 +66,10 @@ AppController::AppController(bool smokeTest, QObject* parent)
         QTimer::singleShot(0, &sources_, &WindowSources::refresh);
 }
 AppController::~AppController() {
+    QObject::disconnect(&capture_, nullptr, this, nullptr);
+    QObject::disconnect(&shortcut_, nullptr, this, nullptr);
+    tray_.hide();
+    tray_.setContextMenu(nullptr);
     saveTimer_.stop();
     capture_.stop();
     if (!smokeTest_)

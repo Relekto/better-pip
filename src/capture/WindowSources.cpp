@@ -61,6 +61,11 @@ void WindowSources::refresh() {
     std::sort(next.begin(), next.end(), [](const Source& a, const Source& b) {
         return QString::localeAwareCompare(a.window.description(), b.window.description()) < 0;
     });
+    if (next.size() == sources_.size() &&
+        std::equal(next.cbegin(), next.cend(), sources_.cbegin(), [](const Source& a, const Source& b) {
+            return a.token == b.token && a.window.description() == b.window.description();
+        }))
+        return;
     sources_ = std::move(next);
     rebuild();
 }
