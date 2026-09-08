@@ -11,6 +11,15 @@ find_package(Qt6 6.11.2 EXACT REQUIRED COMPONENTS Core Gui Widgets Quick QuickCo
 qt_standard_project_setup(REQUIRES 6.11)
 include(CTest)
 include(cmake/CompilerOptions.cmake)
+qt_add_library(pip-services STATIC
+    src/core/Preferences.h src/core/Preferences.cpp
+    src/core/SettingsStore.h src/core/SettingsStore.cpp
+    src/capture/WindowSources.h src/capture/WindowSources.cpp
+    src/capture/CaptureService.h src/capture/CaptureService.cpp
+)
+target_include_directories(pip-services PUBLIC src)
+target_link_libraries(pip-services PUBLIC Qt6::Core Qt6::Gui Qt6::Multimedia Qt6::Network)
+better_pip_warnings(pip-services)
 qt_add_executable(better-pip src/app/main.cpp)
 target_link_libraries(better-pip PRIVATE Qt6::Quick Qt6::QuickControls2 Qt6::Widgets Qt6::Multimedia Qt6::Network)
 better_pip_warnings(better-pip)
@@ -26,6 +35,9 @@ qt_add_qml_module(better-pip
     QML_FILES ui/Main.qml
 )
 if(BUILD_TESTING)
+    qt_add_executable(preferences-test tests/unit/PreferencesTest.cpp)
+    target_link_libraries(preferences-test PRIVATE pip-services Qt6::Test)
+    add_test(NAME preferences COMMAND preferences-test)
     add_test(NAME application_startup COMMAND better-pip --smoke-test)
     set_tests_properties(application_startup PROPERTIES
         ENVIRONMENT "QT_QPA_PLATFORM=offscreen;QT_QUICK_BACKEND=software"
