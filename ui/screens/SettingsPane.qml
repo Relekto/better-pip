@@ -80,6 +80,7 @@ ScrollView {
         }
         Label {
             text: controller.shortcutStatus
+            textFormat: Text.PlainText
             color: pane.muted
             font.pixelSize: 12
         }

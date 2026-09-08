@@ -53,7 +53,7 @@ jobs:
         run: ctest --preset release
       - name: C++ static analysis
         if: runner.os == 'Linux'
-        run: run-clang-tidy -p build/release -checks='-*,clang-analyzer-*' -warnings-as-errors='*' 'src/.*\.cpp$'
+        run: find src -name '*.cpp' ! -path 'src/platform/windows/*' -print0 | xargs -0 -r clang-tidy -p build/release --checks='-*,clang-analyzer-*' --warnings-as-errors='*'
       - name: Linux desktop integration
         if: runner.os == 'Linux'
         run: dbus-run-session -- xvfb-run -a sh -c 'openbox >/tmp/better-pip-openbox.log 2>&1 & XDG_SESSION_TYPE=x11 QT_QPA_PLATFORM=xcb QT_QUICK_BACKEND=software ./build/release/desktop-test; result=$?; cat /tmp/better-pip-openbox.log; exit $result'

@@ -100,7 +100,7 @@ class LinuxShortcut final : public ShortcutBackend {
         while (XPending(display_)) {
             XEvent event{};
             XNextEvent(display_, &event);
-            if (event.type == KeyPress && event.xkey.keycode == key_) {
+            if (event.type == KeyPress && event.xkey.keycode == static_cast<unsigned int>(key_)) {
                 emit owner_.activated();
             }
         }

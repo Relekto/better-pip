@@ -95,6 +95,7 @@ ApplicationWindow {
                 anchors.margins: 12
                 Label {
                     text: controller.message
+                    textFormat: Text.PlainText
                     color: controller.dark ? "#f4d797" : "#765620"
                     wrapMode: Text.WordWrap
                     Layout.fillWidth: true
@@ -214,6 +215,7 @@ ApplicationWindow {
                                     }
                                     Label {
                                         text: row.windowTitle
+                                        textFormat: Text.PlainText
                                         color: root.ink
                                         Layout.fillWidth: true
                                         elide: Text.ElideRight
@@ -232,8 +234,11 @@ ApplicationWindow {
                                     border.width: row.visualFocus ? 1 : 0
                                     border.color: "#45bf91"
                                 }
-                                ToolTip.visible: hovered
-                                ToolTip.text: windowTitle
+                                ToolTip {
+                                    visible: row.hovered
+                                    text: row.windowTitle
+                                    textFormat: Text.PlainText
+                                }
                             }
                             Label {
                                 anchors.centerIn: parent
@@ -319,6 +324,7 @@ ApplicationWindow {
                     }
                     Label {
                         text: controller.sourceTitle
+                        textFormat: Text.PlainText
                         color: root.ink
                         elide: Text.ElideRight
                         Layout.fillWidth: true
