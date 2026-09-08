@@ -6,6 +6,8 @@ Better PiP uses Qt 6.11.2, copyright The Qt Company Ltd. and other contributors,
 
 Qt Multimedia uses FFmpeg 7.1.5 under LGPLv2.1 or later. The official Qt binaries identify this as an LGPL build. FFmpeg notices and license texts accompany the application.
 
+Windows packages include Microsoft Visual C++ and DirectX redistributable components under their Microsoft terms. DirectX Shader Compiler 1.8.2502 is supplied by the Qt SDK; its Microsoft, LLVM, and third-party notices are included. The installer uses NSIS under its upstream licenses; NSIS notices are also included. These components are not relicensed by the application's MIT license.
+
 The Linux AppImage includes the MIT-licensed AppImage type-2 runtime and its statically linked musl, libfuse, squashfuse, zlib, and zstd components. Their notices and source archives accompany this release. Linux system libraries such as PipeWire, X11, and the system C library retain their upstream licenses.
 
 Download **BetterPiP-0.1.0-dependency-sources.zip** alongside the binaries from [the release](https://github.com/Relekto/better-pip/releases/tag/v0.1.0). It contains corresponding Qt and FFmpeg sources, the pinned AppImage runtime and dependency sources, and a SHA-256 source manifest. The application source and build scripts are available from the same tag. See [rebuilding and replacing dependencies](docs/rebuilding-dependencies.md).

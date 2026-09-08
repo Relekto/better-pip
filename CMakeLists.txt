@@ -107,6 +107,7 @@ if(APPLE)
     set(PIP_LICENSE_DESTINATION better-pip.app/Contents/Resources/licenses)
 endif()
 install(FILES LICENSE THIRD_PARTY_NOTICES.md docs/rebuilding-dependencies.md DESTINATION ${PIP_LICENSE_DESTINATION})
+install(DIRECTORY licenses/ DESTINATION ${PIP_LICENSE_DESTINATION} FILES_MATCHING PATTERN "*.txt")
 file(ARCHIVE_EXTRACT INPUT "${CMAKE_CURRENT_SOURCE_DIR}/licenses/dependency-notices.zip"
     DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/dependency-notices")
 install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/dependency-notices/" DESTINATION ${PIP_LICENSE_DESTINATION}/third-party)

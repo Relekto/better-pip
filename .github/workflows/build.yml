@@ -63,7 +63,7 @@ jobs:
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          choco install nsis --yes --no-progress
+          ./tools/install-nsis-windows.ps1 -Destination "$env:RUNNER_TEMP/NSIS"
           ./tools/package-windows.ps1
       - name: Linux packages
         if: runner.os == 'Linux'
