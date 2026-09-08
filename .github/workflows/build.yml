@@ -9,7 +9,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-2022, ubuntu-22.04, macos-15, macos-15-intel]
+        include:
+          - os: windows-2022
+            qt-arch: win64_msvc2022_64
+          - os: ubuntu-22.04
+            qt-arch: linux_gcc_64
+          - os: macos-15
+            qt-arch: clang_64
+          - os: macos-15-intel
+            qt-arch: clang_64
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
@@ -25,6 +33,7 @@ jobs:
       - uses: jurplel/install-qt-action@48d3ad6db93f3627c8ee7a0454bc6f3744f7e730
         with:
           version: '6.11.2'
+          arch: ${{ matrix.qt-arch }}
           modules: 'qtmultimedia qtshadertools'
           cache: true
       - name: Configure
