@@ -39,6 +39,7 @@ class DesktopTest final : public QObject {
         overlay.setFlag(Qt::WindowDoesNotAcceptFocus);
         QVideoSink sink;
         controller.attachOverlay(&overlay, &sink);
+        overlay.setPosition(700, 500);
         QString token;
         const auto findSource = [&] {
             controller.sources()->refresh();
@@ -56,10 +57,15 @@ class DesktopTest final : public QObject {
         QTRY_VERIFY_WITH_TIMEOUT(controller.hasFrame() || !controller.message().isEmpty(), 10000);
         QVERIFY2(controller.hasFrame(), qPrintable(controller.message()));
         QVERIFY(sink.videoFrame().isValid());
-        const auto image = sink.videoFrame().toImage();
-        QVERIFY(!image.isNull());
-        const auto sample = image.pixelColor(image.width() / 3, image.height() / 2);
-        QVERIFY(sample.green() > sample.blue());
+        const auto frameHasFixtureColor = [&sink] {
+            const auto image = sink.videoFrame().toImage();
+            if (image.isNull()) {
+                return false;
+            }
+            const auto sample = image.pixelColor(image.width() / 3, image.height() / 2);
+            return sample.green() > sample.blue();
+        };
+        QTRY_VERIFY_WITH_TIMEOUT(frameHasFixtureColor(), 4000);
         controller.resizePip(700, 200);
         QCOMPARE(overlay.size(), QSize(700, 200));
         controller.setScaleMode(2);
