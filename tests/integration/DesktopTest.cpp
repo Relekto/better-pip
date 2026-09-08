@@ -130,6 +130,20 @@ class DesktopTest final : public QObject {
         QVERIFY(!shortcut.error().isEmpty());
         QVERIFY(!shortcut.setSequence(QStringLiteral("A")));
         QCOMPARE(shortcut.sequence(), QStringLiteral("Ctrl+Alt+F24"));
+#elif defined(Q_OS_LINUX)
+        if (QGuiApplication::platformName().contains(QStringLiteral("wayland"))) {
+            QSKIP("Global shortcut portal consent needs an interactive desktop.");
+        }
+        pip::GlobalShortcut shortcut;
+        pip::GlobalShortcut blocker;
+        QVERIFY(shortcut.setSequence(QStringLiteral("Ctrl+Alt+F12")));
+        QVERIFY(blocker.setSequence(QStringLiteral("Ctrl+Alt+F11")));
+        QVERIFY(!shortcut.setSequence(QStringLiteral("Ctrl+Alt+F11")));
+        QCOMPARE(shortcut.sequence(), QStringLiteral("Ctrl+Alt+F12"));
+        QVERIFY(shortcut.registered());
+        QVERIFY(!shortcut.error().isEmpty());
+#else
+        QSKIP("Native shortcut conflict integration is covered on Windows and X11.");
 #endif
     }
 };
