@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Better PiP
+Comment=Keep a window in a freely sized picture-in-picture
+Exec=better-pip
+Icon=better-pip
+Categories=Utility;
+Terminal=false
+StartupWMClass=better-pip

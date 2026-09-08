@@ -52,6 +52,7 @@ set_target_properties(better-pip PROPERTIES
     MACOSX_BUNDLE TRUE
     MACOSX_BUNDLE_GUI_IDENTIFIER "io.github.relekto.better-pip"
     MACOSX_BUNDLE_BUNDLE_NAME "Better PiP"
+    MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/packaging/macos/Info.plist.in"
 )
 qt_add_qml_module(better-pip
     URI BetterPiP
@@ -77,6 +78,10 @@ if(BUILD_TESTING)
     )
 endif()
 include(GNUInstallDirs)
+if(WIN32)
+    set(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION bin)
+    include(InstallRequiredSystemLibraries)
+endif()
 install(TARGETS better-pip BUNDLE DESTINATION . RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 qt_generate_deploy_qml_app_script(
     TARGET better-pip
@@ -84,4 +89,13 @@ qt_generate_deploy_qml_app_script(
     NO_UNSUPPORTED_PLATFORM_ERROR
 )
 install(SCRIPT ${deploy_script})
-install(FILES LICENSE THIRD_PARTY_NOTICES.md DESTINATION licenses)
+set(PIP_LICENSE_DESTINATION licenses)
+if(APPLE)
+    set(PIP_LICENSE_DESTINATION better-pip.app/Contents/Resources/licenses)
+endif()
+install(FILES LICENSE THIRD_PARTY_NOTICES.md docs/rebuilding-dependencies.md DESTINATION ${PIP_LICENSE_DESTINATION})
+file(ARCHIVE_EXTRACT INPUT "${CMAKE_CURRENT_SOURCE_DIR}/licenses/dependency-notices.zip"
+    DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/dependency-notices")
+install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/dependency-notices/" DESTINATION ${PIP_LICENSE_DESTINATION}/third-party)
+get_filename_component(PIP_QT_ROOT "${Qt6_DIR}/../../.." ABSOLUTE)
+install(DIRECTORY "${PIP_QT_ROOT}/sbom/" DESTINATION ${PIP_LICENSE_DESTINATION}/sbom OPTIONAL FILES_MATCHING PATTERN "*.spdx.json")

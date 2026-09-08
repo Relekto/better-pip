@@ -6,7 +6,9 @@ Better PiP is implemented from the product requirements and platform documentati
 
 The core owns persistent preferences and state contracts. Capture services own Qt Multimedia sessions and expose sources and errors. Platform services own global shortcuts and native input behavior. The application controller coordinates them. QML renders state and invokes commands.
 
-Use Qt's maintained window-capture backend first and validate it before introducing a custom graphics pipeline. This replaces the initial proposal to write all native capture backends ourselves: it reduces resource-lifetime and synchronization code while keeping native platform integration available behind services. Frame delivery remains in Qt Multimedia and its video sink, without CPU image copies in application code.
+Windows, macOS, and X11 use Qt Multimedia's native window-capture backends and video sink without application-side CPU image copies. Wayland uses an explicit window-only XDG ScreenCast portal request and a PipeWire stream. That path copies validated frame data into an owned video frame and coalesces delivery through a bounded newest-frame mailbox.
+
+Global shortcuts use RegisterHotKey on Windows, Carbon on macOS, XGrabKey on X11, and the GlobalShortcuts portal on Wayland. A failed replacement preserves the previous registration. Wayland registration is asynchronous and reports the desktop's actual accepted trigger.
 
 ## Ownership
 

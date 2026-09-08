@@ -1,6 +1,7 @@
 #include "AppController.h"
 #include "SingleInstance.h"
 #include <QApplication>
+#include <QIcon>
 #include <QMessageBox>
 #include <QQmlApplicationEngine>
 #include <QQmlError>
@@ -13,6 +14,8 @@ int main(int argc, char *argv[]) {
     QCoreApplication::setApplicationName(QStringLiteral("Better PiP"));
     QCoreApplication::setOrganizationName(QStringLiteral("BetterPiP"));
     QCoreApplication::setApplicationVersion(QStringLiteral("0.1.0"));
+    QGuiApplication::setWindowIcon(QIcon(QStringLiteral(":/assets/icon.svg")));
+    QGuiApplication::setDesktopFileName(QStringLiteral("io.github.relekto.better-pip"));
     QQuickStyle::setStyle(QStringLiteral("Basic"));
     QApplication::setQuitOnLastWindowClosed(false);
     const bool smokeTest = app.arguments().contains(QStringLiteral("--smoke-test"));

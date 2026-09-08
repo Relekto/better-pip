@@ -175,6 +175,18 @@ ScrollView {
             dark: controller.dark
             onClicked: controller.resetPreferences()
         }
+        Label {
+            text: "Better PiP 0.1.0 · MIT licensed\nBuilt with Qt 6.11.2 under LGPLv3. Dependencies retain their own licenses."
+            color: pane.muted
+            wrapMode: Text.WordWrap
+            Layout.fillWidth: true
+        }
+        ActionButton {
+            text: "Open licenses"
+            subdued: true
+            dark: controller.dark
+            onClicked: controller.openLicenses()
+        }
         Item {
             Layout.preferredHeight: 8
         }

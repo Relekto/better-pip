@@ -49,10 +49,29 @@ jobs:
         run: ctest --preset release
       - name: Linux desktop integration
         if: runner.os == 'Linux'
-        run: dbus-run-session -- xvfb-run -a sh -c 'openbox >/tmp/better-pip-openbox.log 2>&1 & QT_QPA_PLATFORM=xcb QT_QUICK_BACKEND=software ./build/release/desktop-test; result=$?; cat /tmp/better-pip-openbox.log; exit $result'
+        run: dbus-run-session -- xvfb-run -a sh -c 'openbox >/tmp/better-pip-openbox.log 2>&1 & XDG_SESSION_TYPE=x11 QT_QPA_PLATFORM=xcb QT_QUICK_BACKEND=software ./build/release/desktop-test; result=$?; cat /tmp/better-pip-openbox.log; exit $result'
       - name: Package directory
         run: cmake --install build/release --prefix dist
+      - name: Windows packages
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          choco install nsis --yes --no-progress
+          ./tools/package-windows.ps1
+      - name: Linux packages
+        if: runner.os == 'Linux'
+        run: sh tools/package-linux.sh
+      - name: macOS packages
+        if: runner.os == 'macOS'
+        run: sh tools/package-macos.sh
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: better-pip-${{ matrix.os }}
-          path: dist/
+          path: |
+            out/release/*.exe
+            out/release/*.zip
+            out/release/*.dmg
+            out/release/*.AppImage
+            out/release/*.tar.gz
+            out/release/SHA256SUMS-*.txt
+          if-no-files-found: error

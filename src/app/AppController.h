@@ -62,6 +62,7 @@ class AppController final : public QObject {
     Q_INVOKABLE bool setShortcut(const QString &text);
     Q_INVOKABLE void resetPreferences();
     Q_INVOKABLE void clearMessage();
+    Q_INVOKABLE void openLicenses();
     Q_INVOKABLE void quit();
   signals:
     void changed();

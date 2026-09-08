@@ -1,14 +1,34 @@
 #include "AppController.h"
 #include <QApplication>
+#include <QDesktopServices>
+#include <QDir>
+#include <QFileInfo>
 #include <QGuiApplication>
 #include <QIcon>
 #include <QScopedValueRollback>
 #include <QScreen>
 #include <QStandardPaths>
 #include <QStyleHints>
+#include <QUrl>
 #include <algorithm>
 
 namespace pip {
+void AppController::openLicenses() {
+#ifdef Q_OS_MACOS
+    const auto relative = QStringLiteral("../Resources/licenses");
+#else
+    const auto relative = QStringLiteral("../licenses");
+#endif
+    const auto directory = QDir(QCoreApplication::applicationDirPath()).absoluteFilePath(relative);
+    const auto url =
+        QFileInfo::exists(directory)
+            ? QUrl::fromLocalFile(directory)
+            : QUrl(QStringLiteral(
+                  "https://github.com/Relekto/better-pip/blob/main/THIRD_PARTY_NOTICES.md"));
+    if (!QDesktopServices::openUrl(url)) {
+        report(QStringLiteral("Could not open the license folder: ") + directory);
+    }
+}
 AppController::AppController(bool smokeTest, QObject *parent)
     : QObject(parent), store_(QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation) +
                               QStringLiteral("/settings.json")),
