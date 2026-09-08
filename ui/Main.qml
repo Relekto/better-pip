@@ -235,9 +235,15 @@ ApplicationWindow {
                                     border.color: "#45bf91"
                                 }
                                 ToolTip {
+                                    id: sourceTip
                                     visible: row.hovered
                                     text: row.windowTitle
-                                    textFormat: Text.PlainText
+                                    contentItem: Text {
+                                        text: sourceTip.text
+                                        textFormat: Text.PlainText
+                                        font: sourceTip.font
+                                        color: sourceTip.palette.toolTipText
+                                    }
                                 }
                             }
                             Label {

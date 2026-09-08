@@ -73,7 +73,7 @@ if(BUILD_TESTING)
     add_test(NAME preferences COMMAND preferences-test)
     add_test(NAME application_startup COMMAND better-pip --smoke-test)
     set_tests_properties(application_startup PROPERTIES
-        ENVIRONMENT "QT_QPA_PLATFORM=offscreen;QT_QUICK_BACKEND=software"
+        ENVIRONMENT "QT_QPA_PLATFORM=offscreen;QT_QUICK_BACKEND=software;BETTER_PIP_DIAGNOSTICS=1"
         TIMEOUT 15
     )
 endif()
