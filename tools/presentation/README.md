@@ -2,6 +2,8 @@
 
 This optional C++ tool loads the application's actual QML and controller. A separate process supplies an animated geometric window. Window enumeration is filtered and checked against that exact title before exporting any frame. No desktop screenshot or personal window content is exported.
 
+This tool produces the app screenshots and the earlier geometric demonstration. The current README video is a separate stock-footage edit; see its [credits](../../docs/media/CREDITS.md).
+
 Build in the same Qt developer environment as the app:
 
 ```sh
@@ -17,8 +19,8 @@ The output contains 450 frames and three presentation screenshots. Frames contai
 Encode with an independently installed FFmpeg CLI:
 
 ```sh
-ffmpeg -framerate 30 -i out/presentation/frames/%04d.png -c:v libx264 -crf 20 -pix_fmt yuv420p -movflags +faststart docs/media/demo.mp4
-ffmpeg -i docs/media/demo.mp4 -filter_complex "fps=12,scale=768:-1:flags=lanczos,split[a][b];[a]palettegen=stats_mode=diff[p];[b][p]paletteuse=dither=bayer" -loop 0 docs/media/demo.gif
+ffmpeg -framerate 30 -i out/presentation/frames/%04d.png -c:v libx264 -crf 20 -pix_fmt yuv420p -movflags +faststart out/presentation/geometric-demo.mp4
+ffmpeg -i out/presentation/geometric-demo.mp4 -filter_complex "fps=12,scale=768:-1:flags=lanczos,split[a][b];[a]palettegen=stats_mode=diff[p];[b][p]paletteuse=dither=bayer" -loop 0 out/presentation/geometric-demo.gif
 ```
 
 Inspect all scene boundaries and the three screenshots before publishing. Keep the README's media version note accurate when the source appearance differs from the current binary release.
