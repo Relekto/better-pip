@@ -7,7 +7,7 @@
 
 class PreferencesTest final : public QObject {
     Q_OBJECT
-private slots:
+  private slots:
     void clampsInvalidInput() {
         pip::Preferences value;
         value.opacity = -20;
@@ -19,8 +19,8 @@ private slots:
         QCOMPARE(result.theme, pip::Theme::System);
     }
     void recoversRemovedMonitor() {
-        const auto geometry = pip::visibleGeometry(QRect(6000, -4000, 640, 360),
-                                                    QRect(-1920, 0, 1920, 1080));
+        const auto geometry =
+            pip::visibleGeometry(QRect(6000, -4000, 640, 360), QRect(-1920, 0, 1920, 1080));
         QVERIFY(QRect(-1920, 0, 1920, 1080).contains(geometry));
         QCOMPARE(geometry.size(), QSize(640, 360));
     }

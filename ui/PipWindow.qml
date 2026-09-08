@@ -12,17 +12,15 @@ Window {
     transientParent: null
     flags: Qt.Window | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint
     Component.onCompleted: controller.attachOverlay(pip, video.videoSink)
-    onClosing: function(close) {
-        close.accepted = false
-        controller.stop()
+    onClosing: function (close) {
+        close.accepted = false;
+        controller.stop();
     }
 
     VideoOutput {
         id: video
         anchors.fill: parent
-        fillMode: controller.scaleMode === 2 ? VideoOutput.Stretch
-                : controller.scaleMode === 1 ? VideoOutput.PreserveAspectCrop
-                : VideoOutput.PreserveAspectFit
+        fillMode: controller.scaleMode === 2 ? VideoOutput.Stretch : controller.scaleMode === 1 ? VideoOutput.PreserveAspectCrop : VideoOutput.PreserveAspectFit
         visible: controller.hasFrame
     }
 
@@ -40,9 +38,11 @@ Window {
         enabled: !controller.locked
         hoverEnabled: true
         acceptedButtons: Qt.LeftButton | Qt.RightButton
-        onPressed: function(mouse) {
-            if (mouse.button === Qt.RightButton) contextMenu.popup()
-            else pip.startSystemMove()
+        onPressed: function (mouse) {
+            if (mouse.button === Qt.RightButton)
+                contextMenu.popup();
+            else
+                pip.startSystemMove();
         }
         onDoubleClicked: controller.showControls()
     }
@@ -64,7 +64,9 @@ Window {
         radius: 12
         color: "#ed17231f"
         visible: !controller.locked && (moveArea.containsMouse || toolbarHover.hovered || contextMenu.opened)
-        HoverHandler { id: toolbarHover }
+        HoverHandler {
+            id: toolbarHover
+        }
         Row {
             id: actions
             anchors.centerIn: parent
@@ -75,21 +77,84 @@ Window {
                 ToolTip.visible: hovered
                 ToolTip.text: "Clicks pass through. Unlock with " + controller.shortcut
             }
-            Button { text: "Controls"; onClicked: controller.showControls() }
-            Button { text: "×"; onClicked: controller.stop(); Accessible.name: "Close picture-in-picture" }
+            Button {
+                text: "Controls"
+                onClicked: controller.showControls()
+            }
+            Button {
+                text: "×"
+                onClicked: controller.stop()
+                Accessible.name: "Close picture-in-picture"
+            }
         }
     }
 
     Repeater {
         model: [
-            { edge: Qt.LeftEdge, cursor: Qt.SizeHorCursor, left: true, right: false, top: false, bottom: false },
-            { edge: Qt.RightEdge, cursor: Qt.SizeHorCursor, left: false, right: true, top: false, bottom: false },
-            { edge: Qt.TopEdge, cursor: Qt.SizeVerCursor, left: false, right: false, top: true, bottom: false },
-            { edge: Qt.BottomEdge, cursor: Qt.SizeVerCursor, left: false, right: false, top: false, bottom: true },
-            { edge: Qt.TopEdge | Qt.LeftEdge, cursor: Qt.SizeFDiagCursor, left: true, right: false, top: true, bottom: false },
-            { edge: Qt.TopEdge | Qt.RightEdge, cursor: Qt.SizeBDiagCursor, left: false, right: true, top: true, bottom: false },
-            { edge: Qt.BottomEdge | Qt.LeftEdge, cursor: Qt.SizeBDiagCursor, left: true, right: false, top: false, bottom: true },
-            { edge: Qt.BottomEdge | Qt.RightEdge, cursor: Qt.SizeFDiagCursor, left: false, right: true, top: false, bottom: true }
+            {
+                edge: Qt.LeftEdge,
+                cursor: Qt.SizeHorCursor,
+                left: true,
+                right: false,
+                top: false,
+                bottom: false
+            },
+            {
+                edge: Qt.RightEdge,
+                cursor: Qt.SizeHorCursor,
+                left: false,
+                right: true,
+                top: false,
+                bottom: false
+            },
+            {
+                edge: Qt.TopEdge,
+                cursor: Qt.SizeVerCursor,
+                left: false,
+                right: false,
+                top: true,
+                bottom: false
+            },
+            {
+                edge: Qt.BottomEdge,
+                cursor: Qt.SizeVerCursor,
+                left: false,
+                right: false,
+                top: false,
+                bottom: true
+            },
+            {
+                edge: Qt.TopEdge | Qt.LeftEdge,
+                cursor: Qt.SizeFDiagCursor,
+                left: true,
+                right: false,
+                top: true,
+                bottom: false
+            },
+            {
+                edge: Qt.TopEdge | Qt.RightEdge,
+                cursor: Qt.SizeBDiagCursor,
+                left: false,
+                right: true,
+                top: true,
+                bottom: false
+            },
+            {
+                edge: Qt.BottomEdge | Qt.LeftEdge,
+                cursor: Qt.SizeBDiagCursor,
+                left: true,
+                right: false,
+                top: false,
+                bottom: true
+            },
+            {
+                edge: Qt.BottomEdge | Qt.RightEdge,
+                cursor: Qt.SizeFDiagCursor,
+                left: false,
+                right: true,
+                top: false,
+                bottom: true
+            }
         ]
         MouseArea {
             required property var modelData
@@ -106,15 +171,47 @@ Window {
 
     Menu {
         id: contextMenu
-        MenuItem { text: "Choose another window"; onTriggered: controller.showControls() }
+        MenuItem {
+            text: "Choose another window"
+            onTriggered: controller.showControls()
+        }
         MenuSeparator {}
-        MenuItem { text: "Fit · show whole window"; checkable: true; checked: controller.scaleMode === 0; onTriggered: controller.scaleMode = 0 }
-        MenuItem { text: "Fill · crop to frame"; checkable: true; checked: controller.scaleMode === 1; onTriggered: controller.scaleMode = 1 }
-        MenuItem { text: "Stretch · fill freely"; checkable: true; checked: controller.scaleMode === 2; onTriggered: controller.scaleMode = 2 }
-        MenuItem { text: "Keep source proportions"; checkable: true; checked: controller.preserveAspect; onTriggered: controller.preserveAspect = !controller.preserveAspect }
+        MenuItem {
+            text: "Fit · show whole window"
+            checkable: true
+            checked: controller.scaleMode === 0
+            onTriggered: controller.scaleMode = 0
+        }
+        MenuItem {
+            text: "Fill · crop to frame"
+            checkable: true
+            checked: controller.scaleMode === 1
+            onTriggered: controller.scaleMode = 1
+        }
+        MenuItem {
+            text: "Stretch · fill freely"
+            checkable: true
+            checked: controller.scaleMode === 2
+            onTriggered: controller.scaleMode = 2
+        }
+        MenuItem {
+            text: "Keep source proportions"
+            checkable: true
+            checked: controller.preserveAspect
+            onTriggered: controller.preserveAspect = !controller.preserveAspect
+        }
         MenuSeparator {}
-        MenuItem { text: "Lock and pass clicks through"; onTriggered: controller.toggleLock() }
-        MenuItem { text: "Settings and controls"; onTriggered: controller.showControls() }
-        MenuItem { text: "Close PiP"; onTriggered: controller.stop() }
+        MenuItem {
+            text: "Lock and pass clicks through"
+            onTriggered: controller.toggleLock()
+        }
+        MenuItem {
+            text: "Settings and controls"
+            onTriggered: controller.showControls()
+        }
+        MenuItem {
+            text: "Close PiP"
+            onTriggered: controller.stop()
+        }
     }
 }

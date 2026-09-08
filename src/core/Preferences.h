@@ -16,6 +16,6 @@ struct Preferences {
 };
 
 [[nodiscard]] Preferences sanitized(Preferences value);
-[[nodiscard]] QRect visibleGeometry(QRect requested, const QRect& available);
+[[nodiscard]] QRect visibleGeometry(QRect requested, const QRect &available);
 [[nodiscard]] QSize constrainedSize(QSize requested, double aspect);
 }

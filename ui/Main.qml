@@ -29,21 +29,24 @@ ApplicationWindow {
     palette.highlight: "#45bf91"
     palette.highlightedText: "#102b1f"
 
-    onClosing: function(close) {
+    onClosing: function (close) {
         if (controller.active) {
-            close.accepted = false
-            root.hide()
-        } else controller.quit()
+            close.accepted = false;
+            root.hide();
+        } else
+            controller.quit();
     }
     Connections {
         target: controller
         function onControlsRequested() {
-            root.show()
-            root.raise()
-            root.requestActivate()
+            root.show();
+            root.raise();
+            root.requestActivate();
         }
     }
-    PipWindow { controller: root.controller }
+    PipWindow {
+        controller: root.controller
+    }
 
     ColumnLayout {
         anchors.fill: parent
@@ -52,11 +55,33 @@ ApplicationWindow {
         RowLayout {
             Layout.fillWidth: true
             spacing: 12
-            Image { source: "qrc:/assets/icon.svg"; sourceSize.width: 40; sourceSize.height: 40; Layout.preferredWidth: 40; Layout.preferredHeight: 40 }
-            Label { text: "Better PiP"; color: root.ink; font.pixelSize: 19; font.weight: Font.DemiBold }
-            Label { text: "0.1"; color: root.muted; font.pixelSize: 11 }
-            Item { Layout.fillWidth: true }
-            ActionButton { text: settingsOpen ? "Back to windows" : "Settings"; subdued: true; dark: controller.dark; onClicked: settingsOpen = !settingsOpen }
+            Image {
+                source: "qrc:/assets/icon.svg"
+                sourceSize.width: 40
+                sourceSize.height: 40
+                Layout.preferredWidth: 40
+                Layout.preferredHeight: 40
+            }
+            Label {
+                text: "Better PiP"
+                color: root.ink
+                font.pixelSize: 19
+                font.weight: Font.DemiBold
+            }
+            Label {
+                text: "0.1"
+                color: root.muted
+                font.pixelSize: 11
+            }
+            Item {
+                Layout.fillWidth: true
+            }
+            ActionButton {
+                text: settingsOpen ? "Back to windows" : "Settings"
+                subdued: true
+                dark: controller.dark
+                onClicked: settingsOpen = !settingsOpen
+            }
         }
         Rectangle {
             Layout.fillWidth: true
@@ -68,8 +93,19 @@ ApplicationWindow {
                 id: noticeRow
                 anchors.fill: parent
                 anchors.margins: 12
-                Label { text: controller.message; color: controller.dark ? "#f4d797" : "#765620"; wrapMode: Text.WordWrap; Layout.fillWidth: true; font.pixelSize: 12 }
-                ActionButton { text: "Dismiss"; subdued: true; dark: controller.dark; onClicked: controller.clearMessage() }
+                Label {
+                    text: controller.message
+                    color: controller.dark ? "#f4d797" : "#765620"
+                    wrapMode: Text.WordWrap
+                    Layout.fillWidth: true
+                    font.pixelSize: 12
+                }
+                ActionButton {
+                    text: "Dismiss"
+                    subdued: true
+                    dark: controller.dark
+                    onClicked: controller.clearMessage()
+                }
             }
         }
         StackLayout {
@@ -78,8 +114,17 @@ ApplicationWindow {
             currentIndex: settingsOpen ? 1 : 0
             ColumnLayout {
                 spacing: 16
-                Label { text: "Keep a window in view."; color: root.ink; font.pixelSize: 29; font.weight: Font.DemiBold }
-                Label { text: "Choose it. Shape it. Lock it in place."; color: root.muted; font.pixelSize: 14 }
+                Label {
+                    text: "Keep a window in view."
+                    color: root.ink
+                    font.pixelSize: 29
+                    font.weight: Font.DemiBold
+                }
+                Label {
+                    text: "Choose it. Shape it. Lock it in place."
+                    color: root.muted
+                    font.pixelSize: 14
+                }
                 Rectangle {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
@@ -102,16 +147,37 @@ ApplicationWindow {
                                 leftPadding: 12
                                 implicitHeight: 42
                                 Accessible.name: "Search available windows"
-                                background: Rectangle { radius: 9; color: controller.dark ? "#101a15" : "#f6f8f5"; border.color: search.activeFocus ? "#45bf91" : root.line }
+                                background: Rectangle {
+                                    radius: 9
+                                    color: controller.dark ? "#101a15" : "#f6f8f5"
+                                    border.color: search.activeFocus ? "#45bf91" : root.line
+                                }
                             }
-                            ActionButton { text: "Refresh"; visible: !controller.wayland; subdued: true; dark: controller.dark; onClicked: controller.sources.refresh() }
+                            ActionButton {
+                                text: "Refresh"
+                                visible: !controller.wayland
+                                subdued: true
+                                dark: controller.dark
+                                onClicked: controller.sources.refresh()
+                            }
                         }
                         RowLayout {
                             Layout.fillWidth: true
                             visible: !controller.wayland
-                            Label { text: "AVAILABLE WINDOWS"; color: root.muted; font.pixelSize: 10; font.letterSpacing: 1.3 }
-                            Item { Layout.fillWidth: true }
-                            Label { text: controller.sources.count; color: root.muted; font.pixelSize: 11 }
+                            Label {
+                                text: "AVAILABLE WINDOWS"
+                                color: root.muted
+                                font.pixelSize: 10
+                                font.letterSpacing: 1.3
+                            }
+                            Item {
+                                Layout.fillWidth: true
+                            }
+                            Label {
+                                text: controller.sources.count
+                                color: root.muted
+                                font.pixelSize: 11
+                            }
                         }
                         ListView {
                             id: windowList
@@ -138,12 +204,34 @@ ApplicationWindow {
                                         Layout.preferredHeight: 36
                                         radius: 9
                                         color: controller.dark ? "#304638" : "#eaf2eb"
-                                        Label { anchors.centerIn: parent; text: row.windowTitle.charAt(0).toUpperCase(); color: controller.dark ? "#8be6b7" : "#33724d"; font.weight: Font.DemiBold; font.pixelSize: 15 }
+                                        Label {
+                                            anchors.centerIn: parent
+                                            text: row.windowTitle.charAt(0).toUpperCase()
+                                            color: controller.dark ? "#8be6b7" : "#33724d"
+                                            font.weight: Font.DemiBold
+                                            font.pixelSize: 15
+                                        }
                                     }
-                                    Label { text: row.windowTitle; color: root.ink; Layout.fillWidth: true; elide: Text.ElideRight; font.pixelSize: 13 }
-                                    Label { text: "Open PiP  ↗"; color: root.muted; font.pixelSize: 11; visible: row.hovered || row.visualFocus }
+                                    Label {
+                                        text: row.windowTitle
+                                        color: root.ink
+                                        Layout.fillWidth: true
+                                        elide: Text.ElideRight
+                                        font.pixelSize: 13
+                                    }
+                                    Label {
+                                        text: "Open PiP  ↗"
+                                        color: root.muted
+                                        font.pixelSize: 11
+                                        visible: row.hovered || row.visualFocus
+                                    }
                                 }
-                                background: Rectangle { radius: 9; color: row.hovered || row.visualFocus ? (controller.dark ? "#22372a" : "#f0f6ef") : "transparent"; border.width: row.visualFocus ? 1 : 0; border.color: "#45bf91" }
+                                background: Rectangle {
+                                    radius: 9
+                                    color: row.hovered || row.visualFocus ? (controller.dark ? "#22372a" : "#f0f6ef") : "transparent"
+                                    border.width: row.visualFocus ? 1 : 0
+                                    border.color: "#45bf91"
+                                }
                                 ToolTip.visible: hovered
                                 ToolTip.text: windowTitle
                             }
@@ -162,22 +250,53 @@ ApplicationWindow {
                             Layout.fillWidth: true
                             Layout.fillHeight: true
                             spacing: 16
-                            Item { Layout.fillHeight: true }
-                            Label { text: "Choose with your desktop"; color: root.ink; font.pixelSize: 21 }
-                            Label { text: "Your desktop asks which content to share. Window selection and keeping PiP above other apps depend on your desktop."; color: root.muted; Layout.fillWidth: true; wrapMode: Text.WordWrap }
-                            ActionButton { text: "Choose a window"; primary: true; onClicked: controller.chooseWithPortal() }
-                            Item { Layout.fillHeight: true }
+                            Item {
+                                Layout.fillHeight: true
+                            }
+                            Label {
+                                text: "Choose with your desktop"
+                                color: root.ink
+                                font.pixelSize: 21
+                            }
+                            Label {
+                                text: "Your desktop asks which content to share. Window selection and keeping PiP above other apps depend on your desktop."
+                                color: root.muted
+                                Layout.fillWidth: true
+                                wrapMode: Text.WordWrap
+                            }
+                            ActionButton {
+                                text: "Choose a window"
+                                primary: true
+                                onClicked: controller.chooseWithPortal()
+                            }
+                            Item {
+                                Layout.fillHeight: true
+                            }
                         }
                     }
                 }
                 RowLayout {
                     Layout.fillWidth: true
-                    Label { text: "Local capture. No recording or uploads."; color: root.muted; font.pixelSize: 11 }
-                    Item { Layout.fillWidth: true }
-                    Label { text: "Fit · Fill · Stretch"; color: root.muted; font.pixelSize: 11 }
+                    Label {
+                        text: "Local capture. No recording or uploads."
+                        color: root.muted
+                        font.pixelSize: 11
+                    }
+                    Item {
+                        Layout.fillWidth: true
+                    }
+                    Label {
+                        text: "Fit · Fill · Stretch"
+                        color: root.muted
+                        font.pixelSize: 11
+                    }
                 }
             }
-            SettingsPane { controller: root.controller; ink: root.ink; muted: root.muted }
+            SettingsPane {
+                controller: root.controller
+                ink: root.ink
+                muted: root.muted
+            }
         }
         Rectangle {
             Layout.fillWidth: true
@@ -192,12 +311,37 @@ ApplicationWindow {
                 ColumnLayout {
                     Layout.fillWidth: true
                     spacing: 4
-                    Label { text: controller.locked ? "LOCKED · CLICKS PASS THROUGH" : controller.hasFrame ? "PICTURE-IN-PICTURE ACTIVE" : "CONNECTING"; color: root.muted; font.pixelSize: 10; font.letterSpacing: 0.7 }
-                    Label { text: controller.sourceTitle; color: root.ink; elide: Text.ElideRight; Layout.fillWidth: true; font.pixelSize: 13 }
+                    Label {
+                        text: controller.locked ? "LOCKED · CLICKS PASS THROUGH" : controller.hasFrame ? "PICTURE-IN-PICTURE ACTIVE" : "CONNECTING"
+                        color: root.muted
+                        font.pixelSize: 10
+                        font.letterSpacing: 0.7
+                    }
+                    Label {
+                        text: controller.sourceTitle
+                        color: root.ink
+                        elide: Text.ElideRight
+                        Layout.fillWidth: true
+                        font.pixelSize: 13
+                    }
                 }
-                ActionButton { text: controller.locked ? "Unlock" : "Lock PiP"; primary: true; onClicked: controller.toggleLock() }
-                ActionButton { text: "Show"; subdued: true; dark: controller.dark; onClicked: controller.showOverlay() }
-                ActionButton { text: "Stop"; subdued: true; dark: controller.dark; onClicked: controller.stop() }
+                ActionButton {
+                    text: controller.locked ? "Unlock" : "Lock PiP"
+                    primary: true
+                    onClicked: controller.toggleLock()
+                }
+                ActionButton {
+                    text: "Show"
+                    subdued: true
+                    dark: controller.dark
+                    onClicked: controller.showOverlay()
+                }
+                ActionButton {
+                    text: "Stop"
+                    subdued: true
+                    dark: controller.dark
+                    onClicked: controller.stop()
+                }
             }
         }
     }

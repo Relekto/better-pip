@@ -1,8 +1,6 @@
 #pragma once
-#include <QElapsedTimer>
 #include <QMediaCaptureSession>
 #include <QPointer>
-#include <QScreenCapture>
 #include <QSize>
 #include <QTimer>
 #include <QVideoSink>
@@ -13,25 +11,25 @@ namespace pip {
 class PortalCapture;
 class CaptureService final : public QObject {
     Q_OBJECT
-public:
-    explicit CaptureService(QObject* parent = nullptr);
+  public:
+    explicit CaptureService(QObject *parent = nullptr);
     ~CaptureService() override;
-    void setVideoSink(QVideoSink* sink);
-    void start(const QCapturableWindow& window);
+    void setVideoSink(QVideoSink *sink);
+    void start(const QCapturableWindow &window);
     void startPortal();
     void stop();
     [[nodiscard]] bool active() const;
     [[nodiscard]] bool hasFrame() const;
     [[nodiscard]] QSize frameSize() const;
     [[nodiscard]] QString title() const;
-signals:
+  signals:
     void changed();
     void frameSizeChanged();
-    void failed(const QString& message);
-private:
-    void fail(const QString& message);
+    void failed(const QString &message);
+
+  private:
+    void fail(const QString &message);
     QWindowCapture windowCapture_;
-    QScreenCapture screenCapture_;
     QMediaCaptureSession session_;
     QPointer<QVideoSink> sink_;
     QMetaObject::Connection frameConnection_;

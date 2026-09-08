@@ -11,15 +11,18 @@ SettingsStore::SettingsStore(QString path) : path_(std::move(path)) {}
 
 Preferences SettingsStore::load() const {
     QFile file(path_);
-    if (!file.open(QIODevice::ReadOnly) || file.size() > 65536)
+    if (!file.open(QIODevice::ReadOnly) || file.size() > 65536) {
         return {};
+    }
     QJsonParseError error;
     const auto document = QJsonDocument::fromJson(file.readAll(), &error);
-    if (error.error != QJsonParseError::NoError || !document.isObject())
+    if (error.error != QJsonParseError::NoError || !document.isObject()) {
         return {};
+    }
     const auto object = document.object();
-    if (object.value(QStringLiteral("version")).toInt() != 1)
+    if (object.value(QStringLiteral("version")).toInt() != 1) {
         return {};
+    }
     Preferences value;
     value.scaleMode = static_cast<ScaleMode>(object.value(QStringLiteral("scaleMode")).toInt());
     value.theme = static_cast<Theme>(object.value(QStringLiteral("theme")).toInt());
@@ -34,11 +37,12 @@ Preferences SettingsStore::load() const {
     return sanitized(std::move(value));
 }
 
-bool SettingsStore::save(const Preferences& preferences, QString* error) const {
+bool SettingsStore::save(const Preferences &preferences, QString *error) const {
     const auto value = sanitized(preferences);
     if (!QDir().mkpath(QFileInfo(path_).absolutePath())) {
-        if (error)
+        if (error) {
             *error = QStringLiteral("Could not create the settings directory.");
+        }
         return false;
     }
     const QJsonObject geometry{{QStringLiteral("x"), value.geometry.x()},
@@ -55,8 +59,9 @@ bool SettingsStore::save(const Preferences& preferences, QString* error) const {
     QSaveFile file(path_);
     const auto bytes = QJsonDocument(object).toJson();
     if (!file.open(QIODevice::WriteOnly) || file.write(bytes) != bytes.size() || !file.commit()) {
-        if (error)
+        if (error) {
             *error = file.errorString();
+        }
         return false;
     }
     return true;

@@ -3,8 +3,8 @@
 #include <QProcess>
 #include <QSignalSpy>
 #include <QUuid>
-#include <QVideoSink>
 #include <QVideoFrame>
+#include <QVideoSink>
 #include <QtTest>
 #ifdef Q_OS_WIN
 #include <Windows.h>
@@ -12,15 +12,19 @@
 
 class DesktopTest final : public QObject {
     Q_OBJECT
-private slots:
+  private slots:
     void captureResizeAndLock() {
         const auto title = QStringLiteral("Better PiP fixture ") + QUuid::createUuid().toString();
         QProcess fixture;
-        fixture.start(QCoreApplication::applicationDirPath() + QStringLiteral("/source-fixture"), {title});
+        fixture.start(QCoreApplication::applicationDirPath() + QStringLiteral("/source-fixture"),
+                      {title});
         QVERIFY(fixture.waitForStarted());
         struct StopFixture {
-            QProcess& process;
+            QProcess &process;
             ~StopFixture() {
+                if (process.state() == QProcess::NotRunning) {
+                    return;
+                }
                 process.terminate();
                 if (!process.waitForFinished(2000)) {
                     process.kill();
@@ -79,12 +83,24 @@ private slots:
         controller.unlock();
 #endif
         QVERIFY(!controller.locked());
+        QProcess application;
+        application.start(
+            QCoreApplication::applicationDirPath() + QStringLiteral("/better-pip"),
+            {QStringLiteral("--smoke-test"), QStringLiteral("--smoke-source"), title});
+        QVERIFY(application.waitForStarted());
+        QVERIFY(application.waitForFinished(20000));
+        QCOMPARE(application.exitStatus(), QProcess::NormalExit);
+        QCOMPARE(application.exitCode(), 0);
         for (int iteration = 0; iteration < 100; ++iteration) {
             controller.toggleLock();
             QVERIFY(controller.locked());
             controller.unlock();
             QVERIFY(!controller.locked());
         }
+        fixture.terminate();
+        QVERIFY(fixture.waitForFinished(3000));
+        QTRY_VERIFY_WITH_TIMEOUT(!controller.active(), 4000);
+        QVERIFY(!controller.message().isEmpty());
         controller.stop();
         QVERIFY(!controller.active());
         QVERIFY(!overlay.isVisible());
@@ -96,7 +112,9 @@ private slots:
         QVERIFY(shortcut.setSequence(QStringLiteral("Ctrl+Alt+F24")));
         QVERIFY(RegisterHotKey(nullptr, 0x4260, MOD_CONTROL | MOD_ALT, VK_F23));
         struct ReleaseHotkey {
-            ~ReleaseHotkey() { UnregisterHotKey(nullptr, 0x4260); }
+            ~ReleaseHotkey() {
+                UnregisterHotKey(nullptr, 0x4260);
+            }
         } release;
         QVERIFY(!shortcut.setSequence(QStringLiteral("Ctrl+Alt+F23")));
         QCOMPARE(shortcut.sequence(), QStringLiteral("Ctrl+Alt+F24"));

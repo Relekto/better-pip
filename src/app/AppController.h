@@ -11,7 +11,7 @@
 namespace pip {
 class AppController final : public QObject {
     Q_OBJECT
-    Q_PROPERTY(pip::WindowSources* sources READ sources CONSTANT)
+    Q_PROPERTY(pip::WindowSources *sources READ sources CONSTANT)
     Q_PROPERTY(bool active READ active NOTIFY changed)
     Q_PROPERTY(bool hasFrame READ hasFrame NOTIFY changed)
     Q_PROPERTY(bool locked READ locked NOTIFY changed)
@@ -27,10 +27,10 @@ class AppController final : public QObject {
     Q_PROPERTY(bool preserveAspect READ preserveAspect WRITE setPreserveAspect NOTIFY changed)
     Q_PROPERTY(int pipWidth READ pipWidth NOTIFY geometryChanged)
     Q_PROPERTY(int pipHeight READ pipHeight NOTIFY geometryChanged)
-public:
-    explicit AppController(bool smokeTest = false, QObject* parent = nullptr);
+  public:
+    explicit AppController(bool smokeTest = false, QObject *parent = nullptr);
     ~AppController() override;
-    [[nodiscard]] WindowSources* sources();
+    [[nodiscard]] WindowSources *sources();
     [[nodiscard]] bool active() const;
     [[nodiscard]] bool hasFrame() const;
     [[nodiscard]] bool locked() const;
@@ -50,8 +50,8 @@ public:
     void setTheme(int value);
     void setOpacity(int value);
     void setPreserveAspect(bool value);
-    Q_INVOKABLE void attachOverlay(QWindow* window, QObject* videoSink);
-    Q_INVOKABLE void selectSource(const QString& token);
+    Q_INVOKABLE void attachOverlay(QWindow *window, QObject *videoSink);
+    Q_INVOKABLE void selectSource(const QString &token);
     Q_INVOKABLE void chooseWithPortal();
     Q_INVOKABLE void stop();
     Q_INVOKABLE void toggleLock();
@@ -59,19 +59,20 @@ public:
     Q_INVOKABLE void showControls();
     Q_INVOKABLE void showOverlay();
     Q_INVOKABLE void resizePip(int width, int height);
-    Q_INVOKABLE bool setShortcut(const QString& text);
+    Q_INVOKABLE bool setShortcut(const QString &text);
     Q_INVOKABLE void resetPreferences();
     Q_INVOKABLE void clearMessage();
     Q_INVOKABLE void quit();
-signals:
+  signals:
     void changed();
     void geometryChanged();
     void controlsRequested();
-private:
+
+  private:
     void save();
     void applyWindowState();
     void geometryUpdated();
-    void report(const QString& message);
+    void report(const QString &message);
     WindowSources sources_;
     CaptureService capture_;
     GlobalShortcut shortcut_;

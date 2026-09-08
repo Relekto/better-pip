@@ -4,12 +4,15 @@
 namespace pip {
 class SingleInstance final : public QObject {
     Q_OBJECT
-public:
-    explicit SingleInstance(QObject* parent = nullptr);
-    [[nodiscard]] bool start();
-signals:
+  public:
+    explicit SingleInstance(QObject *parent = nullptr);
+    enum class StartResult { Primary, Forwarded, Failed };
+    [[nodiscard]] StartResult start();
+    [[nodiscard]] QString error() const;
+  signals:
     void activationRequested();
-private:
+
+  private:
     QLocalServer server_;
 };
 }

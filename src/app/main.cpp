@@ -1,11 +1,14 @@
-#include <QApplication>
 #include "AppController.h"
 #include "SingleInstance.h"
+#include <QApplication>
+#include <QMessageBox>
 #include <QQmlApplicationEngine>
+#include <QQmlError>
 #include <QQuickStyle>
+#include <QQuickWindow>
 #include <QTimer>
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
     QCoreApplication::setApplicationName(QStringLiteral("Better PiP"));
     QCoreApplication::setOrganizationName(QStringLiteral("BetterPiP"));
@@ -14,17 +17,76 @@ int main(int argc, char* argv[]) {
     QApplication::setQuitOnLastWindowClosed(false);
     const bool smokeTest = app.arguments().contains(QStringLiteral("--smoke-test"));
     pip::SingleInstance instance;
-    if (!smokeTest && !instance.start()) return 0;
+    if (!smokeTest) {
+        const auto result = instance.start();
+        if (result == pip::SingleInstance::StartResult::Forwarded) {
+            return 0;
+        }
+        if (result == pip::SingleInstance::StartResult::Failed) {
+            QMessageBox::critical(nullptr, QStringLiteral("Better PiP"),
+                                  QStringLiteral("The recovery control channel could not start: ") +
+                                      instance.error());
+            return 1;
+        }
+    }
     pip::AppController controller(smokeTest);
-    QObject::connect(&instance, &pip::SingleInstance::activationRequested,
-                     &controller, &pip::AppController::showControls);
+    QObject::connect(&instance, &pip::SingleInstance::activationRequested, &controller,
+                     &pip::AppController::showControls);
+    bool qmlFailed = false;
     QQmlApplicationEngine engine;
+    QObject::connect(&engine, &QQmlApplicationEngine::warnings, &app,
+                     [&qmlFailed](const QList<QQmlError> &errors) {
+                         if (!errors.isEmpty()) {
+                             qmlFailed = true;
+                         }
+                     });
     engine.setInitialProperties({{QStringLiteral("controller"), QVariant::fromValue(&controller)}});
-    QObject::connect(&engine, &QQmlApplicationEngine::objectCreationFailed, &app,
-                     [] { QCoreApplication::exit(1); }, Qt::QueuedConnection);
+    QObject::connect(
+        &engine, &QQmlApplicationEngine::objectCreationFailed, &app,
+        [] { QCoreApplication::exit(1); }, Qt::QueuedConnection);
     engine.loadFromModule(QStringLiteral("BetterPiP"), QStringLiteral("Main"));
-    if (app.arguments().contains(QStringLiteral("--smoke-test"))) {
+    const auto sourceArgument = app.arguments().indexOf(QStringLiteral("--smoke-source"));
+    if (smokeTest && sourceArgument >= 0) {
+        const auto sourceTitle = app.arguments().value(sourceArgument + 1);
+        QTimer::singleShot(15000, &app, [] { QCoreApplication::exit(1); });
+        for (auto *window : QGuiApplication::topLevelWindows()) {
+            auto *quickWindow = qobject_cast<QQuickWindow *>(window);
+            if (!quickWindow || window->title() == QStringLiteral("Better PiP")) {
+                continue;
+            }
+            QObject::connect(
+                quickWindow, &QQuickWindow::frameSwapped, &controller,
+                [&controller, count = 0]() mutable {
+                    if (!controller.hasFrame()) {
+                        return;
+                    }
+                    ++count;
+                    if (count == 3) {
+                        controller.toggleLock();
+                    }
+                    if (count == 6) {
+                        controller.unlock();
+                    }
+                    if (count == 9) {
+                        QCoreApplication::quit();
+                    }
+                },
+                Qt::QueuedConnection);
+        }
+        QTimer::singleShot(100, &controller, [&controller, sourceTitle] {
+            controller.sources()->refresh();
+            for (int row = 0; row < controller.sources()->rowCount(); ++row) {
+                const auto index = controller.sources()->index(row, 0);
+                if (index.data(pip::WindowSources::TitleRole).toString() == sourceTitle) {
+                    controller.selectSource(index.data(pip::WindowSources::TokenRole).toString());
+                    return;
+                }
+            }
+            QCoreApplication::exit(1);
+        });
+    } else if (smokeTest) {
         QTimer::singleShot(500, &app, &QCoreApplication::quit);
     }
-    return app.exec();
+    const auto result = app.exec();
+    return smokeTest && qmlFailed ? 1 : result;
 }
