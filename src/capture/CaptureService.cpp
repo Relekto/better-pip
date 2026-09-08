@@ -1,5 +1,8 @@
 #include "CaptureService.h"
 #include <QVideoFrame>
+#ifdef Q_OS_LINUX
+#include "platform/linux/PortalCapture.h"
+#endif
 
 namespace pip {
 CaptureService::CaptureService(QObject* parent) : QObject(parent) {
@@ -63,17 +66,30 @@ void CaptureService::start(const QCapturableWindow& window) {
 }
 void CaptureService::startPortal() {
     stop();
+#ifdef Q_OS_LINUX
+    if (!portalCapture_) {
+        portalCapture_ = std::make_unique<PortalCapture>();
+        connect(portalCapture_.get(), &PortalCapture::failed, this, &CaptureService::fail);
+        connect(portalCapture_.get(), &PortalCapture::frameReady, this, [this](const QVideoFrame& frame) {
+            if (active_ && portal_ && sink_) sink_->setVideoFrame(frame);
+        });
+    }
     portal_ = true;
     title_ = QStringLiteral("Shared window");
-    session_.setScreenCapture(&screenCapture_);
     active_ = true;
     emit changed();
-    screenCapture_.start();
+    portalCapture_->start();
+#else
+    emit failed(QStringLiteral("Use the window list to choose a source."));
+#endif
 }
 void CaptureService::stop() {
     active_ = false;
     hasFrame_ = false;
     sourceMonitor_.stop();
+#ifdef Q_OS_LINUX
+    if (portalCapture_) portalCapture_->stop();
+#endif
     firstFrameTimeout_.stop();
     windowCapture_.stop();
     screenCapture_.stop();

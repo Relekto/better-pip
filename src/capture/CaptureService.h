@@ -7,8 +7,10 @@
 #include <QTimer>
 #include <QVideoSink>
 #include <QWindowCapture>
+#include <memory>
 
 namespace pip {
+class PortalCapture;
 class CaptureService final : public QObject {
     Q_OBJECT
 public:
@@ -41,5 +43,8 @@ private:
     bool active_{false};
     bool hasFrame_{false};
     bool portal_{false};
+#ifdef Q_OS_LINUX
+    std::unique_ptr<PortalCapture> portalCapture_;
+#endif
 };
 }
