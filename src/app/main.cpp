@@ -57,9 +57,14 @@ int main(int argc, char *argv[]) {
         [] { QCoreApplication::exit(1); }, Qt::QueuedConnection);
     engine.loadFromModule(QStringLiteral("BetterPiP"), QStringLiteral("Main"));
     const auto sourceArgument = app.arguments().indexOf(QStringLiteral("--smoke-source"));
+    QTimer smokeDeadline;
+    smokeDeadline.setSingleShot(true);
+    QTimer sourceStart;
+    sourceStart.setSingleShot(true);
     if (smokeTest && sourceArgument >= 0) {
         const auto sourceTitle = app.arguments().value(sourceArgument + 1);
-        QTimer::singleShot(15000, &app, [] { QCoreApplication::exit(1); });
+        QObject::connect(&smokeDeadline, &QTimer::timeout, &app, [] { QCoreApplication::exit(1); });
+        smokeDeadline.start(15000);
         for (auto *window : QGuiApplication::topLevelWindows()) {
             auto *quickWindow = qobject_cast<QQuickWindow *>(window);
             if (!quickWindow || window->title() == QStringLiteral("Better PiP")) {
@@ -84,7 +89,7 @@ int main(int argc, char *argv[]) {
                 },
                 Qt::QueuedConnection);
         }
-        QTimer::singleShot(100, &controller, [&controller, sourceTitle] {
+        QObject::connect(&sourceStart, &QTimer::timeout, &controller, [&controller, sourceTitle] {
             controller.sources()->refresh();
             for (int row = 0; row < controller.sources()->rowCount(); ++row) {
                 const auto index = controller.sources()->index(row, 0);
@@ -95,8 +100,10 @@ int main(int argc, char *argv[]) {
             }
             QCoreApplication::exit(1);
         });
+        sourceStart.start(100);
     } else if (smokeTest) {
-        QTimer::singleShot(500, &app, &QCoreApplication::quit);
+        QObject::connect(&smokeDeadline, &QTimer::timeout, &app, &QCoreApplication::quit);
+        smokeDeadline.start(500);
     }
     const auto result = app.exec();
     return smokeTest && qmlFailed ? 1 : result;
