@@ -1,0 +1,3 @@
+Checks: '-*,bugprone-*,performance-*,modernize-use-nullptr,modernize-use-override,modernize-use-nodiscard,cppcoreguidelines-owning-memory'
+WarningsAsErrors: 'bugprone-*,performance-*'
+HeaderFilterRegex: 'src/.*'
