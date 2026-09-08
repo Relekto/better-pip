@@ -1,6 +1,7 @@
 #include "PortalShortcut.h"
 #include <QDBusConnection>
 #include <QDBusMessage>
+#include <QDBusPendingCall>
 #include <QDBusMetaType>
 #include <QUuid>
 #include <utility>
