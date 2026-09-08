@@ -78,6 +78,16 @@ if(BUILD_TESTING)
     )
 endif()
 include(GNUInstallDirs)
+option(BETTER_PIP_BUILD_STUDIO "Build the documentation media capture tool" OFF)
+if(BETTER_PIP_BUILD_STUDIO)
+    qt_add_executable(pip-studio tools/presentation/Studio.cpp tools/presentation/MotionWindow.cpp
+        src/app/AppController.cpp src/app/AppController.h)
+    target_link_libraries(pip-studio PRIVATE pip-services Qt6::Widgets Qt6::Quick Qt6::QuickControls2)
+    better_pip_warnings(pip-studio)
+    qt_add_resources(pip-studio studio-assets PREFIX "/" FILES assets/icon.svg
+        ui/Main.qml ui/PipWindow.qml ui/components/ActionButton.qml
+        ui/components/AppPalette.qml ui/screens/SettingsPane.qml)
+endif()
 if(WIN32)
     set(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION bin)
     include(InstallRequiredSystemLibraries)
