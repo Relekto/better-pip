@@ -4,6 +4,20 @@ A freely resizable picture-in-picture mirror for desktop windows, written in C++
 
 [Download the preview](https://github.com/Relekto/better-pip/releases/tag/v0.1.0) · [Platform support](docs/platform-support.md) · [Architecture](docs/architecture.md)
 
+## See it in action
+
+[![A 15-second demonstration of window selection, live capture, stretching, locking and settings](docs/media/demo.gif)](docs/media/demo.mp4)
+
+[Watch or download the 15-second MP4](https://github.com/Relekto/better-pip/blob/main/docs/media/demo.mp4).
+
+Real Windows app captures with generated sample content and an automated feature sequence. The charcoal-and-blue appearance shown here is available on `main`; the v0.1.0 binaries still use the original palette. The lock scene shows the native locked state; physical click-through is covered by the separate desktop integration test.
+
+| Charcoal | Free proportions | Light settings |
+| --- | --- | --- |
+| ![Dark window picker](docs/media/dark.png) | ![Live window stretched to independent dimensions](docs/media/stretch.png) | ![Light theme settings](docs/media/light.png) |
+
+Media can be reproduced with the optional [documentation studio](tools/presentation/README.md).
+
 ## Use
 
 1. Open Better PiP and search for a window title. On Wayland, use the desktop's window chooser.
