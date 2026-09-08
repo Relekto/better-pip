@@ -36,6 +36,9 @@ target_include_directories(pip-services PUBLIC src)
 target_link_libraries(pip-services PUBLIC Qt6::Core Qt6::Gui Qt6::Multimedia Qt6::Network)
 better_pip_warnings(pip-services)
 qt_add_executable(better-pip src/app/main.cpp)
+target_sources(better-pip PRIVATE src/app/AppController.h src/app/AppController.cpp)
+target_link_libraries(better-pip PRIVATE pip-services)
+qt_add_resources(better-pip app-assets PREFIX "/" FILES assets/icon.svg)
 target_link_libraries(better-pip PRIVATE Qt6::Quick Qt6::QuickControls2 Qt6::Widgets Qt6::Multimedia Qt6::Network)
 better_pip_warnings(better-pip)
 set_target_properties(better-pip PROPERTIES
@@ -47,7 +50,7 @@ set_target_properties(better-pip PROPERTIES
 qt_add_qml_module(better-pip
     URI BetterPiP
     VERSION 1.0
-    QML_FILES ui/Main.qml
+    QML_FILES ui/Main.qml ui/PipWindow.qml ui/components/ActionButton.qml ui/screens/SettingsPane.qml
 )
 if(BUILD_TESTING)
     qt_add_executable(preferences-test tests/unit/PreferencesTest.cpp)
