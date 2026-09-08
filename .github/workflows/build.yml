@@ -4,8 +4,12 @@ on:
   pull_request:
 permissions:
   contents: read
+concurrency:
+  group: better-pip-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   build:
+    timeout-minutes: 25
     strategy:
       fail-fast: false
       matrix:
